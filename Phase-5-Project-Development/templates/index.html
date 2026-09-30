@@ -1,0 +1,247 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EduGenie - AI Educational Assistant</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>EduGenie</h1>
+        <p>AI-Powered Educational Assistant</p>
+    </header>
+
+    <main>
+
+        <label for="task">
+            Select a learning task
+        </label>
+
+        <select id="task">
+
+            <option value="qa">
+                Question & Answer
+            </option>
+
+            <option value="explain">
+                Explain a Concept
+            </option>
+
+            <option value="quiz">
+                Generate Quiz
+            </option>
+
+            <option value="summarize">
+                Summarize Text
+            </option>
+
+            <option value="learning">
+                Recommend Learning Path
+            </option>
+
+        </select>
+
+        <label for="level">
+            Student Level
+        </label>
+
+        <select id="level">
+
+            <option value="beginner">
+                Beginner
+            </option>
+
+            <option value="intermediate">
+                Intermediate
+            </option>
+
+            <option value="advanced">
+                Advanced
+            </option>
+
+        </select>
+
+        <label for="inputText">
+            Enter your topic or question
+        </label>
+
+        <textarea
+            id="inputText"
+            rows="8"
+            placeholder="Example: Explain photosynthesis"
+        ></textarea>
+
+        <button onclick="submitTask()">
+            Submit
+        </button>
+
+        <div id="loading">
+            Processing...
+        </div>
+
+        <section class="result-section">
+
+            <h2>Result</h2>
+
+            <pre id="result"></pre>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+async function submitTask() {
+
+    const task =
+        document.getElementById("task").value;
+
+    const level =
+        document.getElementById("level").value;
+
+    const input =
+        document.getElementById("inputText")
+        .value
+        .trim();
+
+    const result =
+        document.getElementById("result");
+
+    const loading =
+        document.getElementById("loading");
+
+    if (!input) {
+
+        result.textContent =
+            "Please enter a topic or question.";
+
+        return;
+    }
+
+    loading.style.display = "block";
+
+    result.textContent = "";
+
+    let endpoint;
+
+    let body;
+
+    if (task === "qa") {
+
+        endpoint = "/qa";
+
+        body = {
+            question: input,
+            level: level
+        };
+
+    } else if (task === "explain") {
+
+        endpoint = "/explain";
+
+        body = {
+            topic: input,
+            level: level
+        };
+
+    } else if (task === "quiz") {
+
+        endpoint = "/quiz";
+
+        body = {
+            topic: input,
+            level: level
+        };
+
+    } else if (task === "summarize") {
+
+        endpoint = "/summarize";
+
+        body = {
+            text: input
+        };
+
+    } else {
+
+        endpoint = "/learn/recommendations";
+
+        body = {
+            topic: input,
+            level: level
+        };
+    }
+
+    try {
+
+        const response = await fetch(
+            endpoint,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify(body)
+            }
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            result.textContent =
+                data.detail ||
+                "Something went wrong.";
+
+            return;
+        }
+
+        if (
+            typeof data.result === "object"
+        ) {
+
+            result.textContent =
+                JSON.stringify(
+                    data.result,
+                    null,
+                    2
+                );
+
+        } else {
+
+            result.textContent =
+                data.result;
+        }
+
+    } catch (error) {
+
+        result.textContent =
+            "Unable to connect to the server.";
+
+    } finally {
+
+        loading.style.display = "none";
+    }
+}
+
+</script>
+
+</body>
+
+</html>
