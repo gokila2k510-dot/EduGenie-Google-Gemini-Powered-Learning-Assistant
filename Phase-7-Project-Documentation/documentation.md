@@ -1,1 +1,1 @@
-[text](../../../Downloads/EduGenie_Complete_Team_Roles_Phasewise_Documentation_Updated_Team_Names.docx)
+https://drive.google.com/file/d/1sfaTFFZLl9-uep2l9YoC6DXfDL7cq9gr/view?usp=drivesdk
